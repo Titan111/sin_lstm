@@ -8,13 +8,13 @@ class LSTM(chainer.Chain):
 	def __init__(self, n_in, n_units,n_out, train=True):
 		super(LSTM, self).__init__(
 			l1=L.Linear(n_in, n_units),
-			l2=L.LSTM(n_units,n_units ),
+			l2=L.LSTM(n_units,n_units),
 			l3=L.Linear(n_units, n_out),
 		)
 
 	def __call__(self, x_data,y_data):
 		x = chainer.Variable(x_data.astype(np.float32).reshape(len(x_data),1))
-		y = chainer.Variable(x_data.astype(np.float32).reshape(len(y_data),1))
+		y = chainer.Variable(y_data.astype(np.float32).reshape(len(y_data),1))
 		return F.mean_squared_error(self.predict(x),y)
 
 
@@ -29,10 +29,10 @@ class LSTM(chainer.Chain):
 
 
 if __name__ == "__main__":
-	x = np.linspace(0,10*np.pi,10000)
+	x = np.linspace(0,10*np.pi,1000)
 	t = np.sin(x)
 
-	model = LSTM(1,10,1)
+	model = LSTM(1,100,1)
 	optimizer = optimizers.Adam()
 	optimizer.setup(model)
 
