@@ -2,7 +2,7 @@ import numpy as np
 import chainer
 import chainer.functions as F
 import chainer.links as L
-from chainer import optimizers,Variable
+from chainer import optimizers,Variable,serializers
 
 class LSTM(chainer.Chain):
 	def __init__(self, n_in, n_units,n_out, train=True):
@@ -19,9 +19,9 @@ class LSTM(chainer.Chain):
 
 
 	def predict(self,x):
-		h0 = F.sigmoid(self.l1(x))
-		h1 = F.sigmoid(self.l2(h0))
-		y = F.sigmoid(self.l3(h1))
+		h0 = self.l1(x)
+		h1 = self.l2(h0)
+		y = self.l3(h1)
 		return y
 
 	def reset_state(self):
@@ -29,18 +29,20 @@ class LSTM(chainer.Chain):
 
 
 if __name__ == "__main__":
-	x = np.linspace(0,10*np.pi,1000)
+	x = np.linspace(0,10*np.pi,10000)
 	t = np.sin(x)
 
-	model = LSTM(1,100,1)
+	model = LSTM(1,5,1)
 	optimizer = optimizers.Adam()
 	optimizer.setup(model)
 
-	for i in range(100000):
+	for i in range(5000):
 		model.reset_state();
 		model.zerograds()
 		loss = model(x,t)
 		print(loss.data)
 		loss.backward()
 		optimizer.update()
+	serializers.save_npz("lstm_model_1_5_1.npz",model)
+
 
